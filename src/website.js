@@ -863,9 +863,13 @@ class WebSite {
         });
     }
 
-    //TODO: should only return one edgesuite host name, even if multiple are called - should lookup to see if there is alrady an existing association
-    _createEdgeHostname(groupId, contractId, configName, productId, edgeHostname = null, force = false, secure = false) {
+    //TODO: should only return one edge host name, even if multiple are called - should lookup to see if there is alrady an existing association
+    _createEdgeHostname(groupId, contractId, configName, productId, edgeHostname = null, force = false, certEnrollmentId = null) {
         return new Promise((resolve, reject) => {
+            if (edgeHostname && edgeHostname.includes("edgekey") && !certEnrollmentId) {
+                reject("hostname containes \"edgekey\" but lacks certEnrollmentId parameter. Aborting...");
+                return
+            }
             console.error('Creating edge hostname for property: ' + configName);
             var domainPrefix;
             var domainSuffix;
@@ -876,13 +880,14 @@ class WebSite {
                 domainPrefix = edgeHostnameToArray.join(".");
             } else {
                 domainPrefix = configName;
-                domainSuffix = "edgesuite.net";
+                domainSuffix = certEnrollmentId ? "edgekey.net" : "edgesuite.net";
             }
             let hostnameObj = {
                 "productId": productId,
                 "domainPrefix": domainPrefix,
                 "domainSuffix": domainSuffix,
-                "secure": false,
+                "secure": certEnrollmentId != null,
+                "certEnrollmentId": certEnrollmentId,
                 "ipVersionBehavior": "IPV6_COMPLIANCE",
             };
 
@@ -2255,12 +2260,14 @@ class WebSite {
                             ruleFormat = false,//secure? ruleformat
                             productId = null,
                             accountKey,
-                            newcpcodename = null) {
+                            newcpcodename = null,
+                            certEnrollmentId = null) {
 
         this._accountSwitchKey = accountKey;
 
-        let newEdgeHostname,
-        secure;
+        let newEdgeHostname;
+        const namedEdgeHostIsSecure = edgeHostname && edgeHostname.includes("edgekey");
+        const secure = namedEdgeHostIsSecure || (!edgeHostname && certEnrollmentId);
         if (!configName && !hostnames) {
             return Promise.reject("Configname or hostname is required.")
         }
@@ -2325,9 +2332,6 @@ class WebSite {
             .then(data => {
                 let ehn_exists = 0;
                 if (edgeHostname) {
-                    if (edgeHostname.indexOf("edgekey") > -1) {
-                        secure = true;
-                    }
                     data.edgeHostnames.items.map(hostname => {
                         if (hostname.edgeHostnameDomain == edgeHostname) {
                             ehn_exists = 1;
@@ -2342,7 +2346,7 @@ class WebSite {
                                 null,
                                 edgeHostname,
                                 false,
-                                secure)
+                                certEnrollmentId)
                             );
                     }
                     //edgeHostnameId = edgeHostname;
@@ -2366,7 +2370,7 @@ class WebSite {
                                 null,
                                 null,
                                 false,
-                                secure)
+                                certEnrollmentId)
                             );
                     } else {
                         return Promise.resolve();
