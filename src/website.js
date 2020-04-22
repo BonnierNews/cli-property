@@ -2339,11 +2339,11 @@ class WebSite {
                     })
                     if (!ehn_exists) {
                         return Promise.resolve(
-                            this._createEdgeHostname(groupId,
+                            this._createEdgeHostname(
+                                groupId,
                                 contractId,
                                 configName,
                                 productId,
-                                null,
                                 edgeHostname,
                                 false,
                                 certEnrollmentId)
@@ -2363,11 +2363,11 @@ class WebSite {
                     })
                     if (!ehn_exists) {
                         return Promise.resolve(
-                            this._createEdgeHostname(groupId,
+                            this._createEdgeHostname(
+                                groupId,
                                 contractId,
                                 configName,
                                 productId,
-                                null,
                                 null,
                                 false,
                                 certEnrollmentId)
