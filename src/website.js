@@ -2434,6 +2434,7 @@ class WebSite {
         let cpcode = options.cpcode || null
         let ruleformat = options.ruleformat || null
         let secure = options.secure || false
+        let certId = options.certEnrollmentId || null
 
         
         let names = this._getConfigAndHostname(configName, hostnames);
@@ -2489,7 +2490,9 @@ class WebSite {
                         contractId,
                         configName,
                         productId,
-                        edgeHostname);
+                        edgeHostname,
+                        false,
+                        certId);
                 } else {
                     return edgeHostnameId
                 }
