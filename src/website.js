@@ -867,7 +867,7 @@ class WebSite {
     _createEdgeHostname(groupId, contractId, configName, productId, edgeHostname = null, force = false, certEnrollmentId = null) {
         return new Promise((resolve, reject) => {
             if (edgeHostname && edgeHostname.includes("edgekey") && !certEnrollmentId) {
-                reject("hostname containes \"edgekey\" but lacks certEnrollmentId parameter. Aborting...");
+                reject("hostname contains \"edgekey\" but lacks certEnrollmentId parameter. Aborting...");
                 return
             }
             console.error('Creating edge hostname for property: ' + configName);
